@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 class RandomNumberScreen extends StatefulWidget {
   const RandomNumberScreen({Key? key}) : super(key: key);
 
@@ -10,7 +11,7 @@ class RandomNumberScreen extends StatefulWidget {
 }
 
 
-//fetch data from API
+//fetch all data from API
 Future<http.Response> getRandomNumber() {
   return http
       .get(Uri.parse('https://csrng.net/csrng/csrng.php?min=1&max=1000'));
@@ -25,7 +26,9 @@ class RandomNumber {
   RandomNumber({required this.random});
 
   factory RandomNumber.fromJson(Map<String, dynamic> json) {
-    return RandomNumber(random: json['random']);
+    return RandomNumber(
+        random: json['random']
+    );
   }
 }
 
@@ -62,21 +65,32 @@ class _RandomNumberScreenState extends State<RandomNumberScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Random number'),
+      ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
           ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            setState(() {
+            });
+          },
           child: const Text('  Get New Random Number   '),
     ),
-          FutureBuilder<RandomNumber>(
-            future: futureRandomNumber,
-            builder: (context, snapshot) {
+            FutureBuilder<RandomNumber>(
+              future: futureRandomNumber,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data!.random);
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
 
-            return Text(snapshot.data!.random);
-          }
-
-          ),
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            ),
           Text('Previous numbers'),
     ],
     ),
